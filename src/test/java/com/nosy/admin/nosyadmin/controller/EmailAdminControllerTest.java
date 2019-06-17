@@ -2,6 +2,8 @@ package com.nosy.admin.nosyadmin.controller;
 
 import com.nosy.admin.nosyadmin.dto.EmailTemplateDto;
 import com.nosy.admin.nosyadmin.dto.InputSystemDto;
+import com.nosy.admin.nosyadmin.model.EmailTemplate;
+import com.nosy.admin.nosyadmin.model.ReadyEmail;
 import com.nosy.admin.nosyadmin.service.EmailTemplateService;
 import com.nosy.admin.nosyadmin.service.InputSystemService;
 import org.junit.Test;
@@ -37,6 +39,15 @@ public class EmailAdminControllerTest {
                 emailTemplatePost("dasda", "dasdas", null,
                         principal).getStatusCode());
         assertEquals("TestSubject",emailTemplateDto.getSubject());
+    }
+
+    @Test
+    public void emailPost() {
+        ReadyEmail readyEmail = new ReadyEmail();
+        readyEmail.setEmailTemplate(new EmailTemplate());
+        readyEmail.getEmailTemplate().setEmailTemplateSubject("TestSubject");
+
+        assertEquals(HttpStatus.OK, emailAdminController.emailPost(readyEmail).getStatusCode());
     }
 
     @Test

@@ -105,13 +105,22 @@ public class EmailTemplateService {
       EmailProviderProperties emailProviderProperties,
       String email) {
 
-    EmailTemplate emailTemplate = getEmailTemplateById(emailTemplateId, inputSystemId, email);
+    ReadyEmail readyEmailDto = new ReadyEmail();
+    readyEmailDto.setEmailTemplate(getEmailTemplateById(emailTemplateId, inputSystemId, email));
+    readyEmailDto.setEmailProviderProperties(emailProviderProperties);
+
+    return postEmail(readyEmailDto);
+  }
+
+  public EmailTemplate postEmail(ReadyEmail readyEmailDto) {
+    EmailProviderProperties emailProviderProperties = readyEmailDto.getEmailProviderProperties();
+    EmailTemplate emailTemplate = readyEmailDto.getEmailTemplate();
 
     boolean auth =
-        (emailProviderProperties.getUsername() == null
-            || emailProviderProperties.getUsername().equals("")
-            || emailProviderProperties.getPassword() == null
-            || emailProviderProperties.getPassword().equals(""));
+            (emailProviderProperties.getUsername() == null
+                    || emailProviderProperties.getUsername().equals("")
+                    || emailProviderProperties.getPassword() == null
+                    || emailProviderProperties.getPassword().equals(""));
 
     if (!emailTemplate.getEmailTemplateFromProvider().equals(EmailFromProvider.DEFAULT) && auth) {
       throw new UsernameAndPasswordAreNotProvidedForNonDefaultException();

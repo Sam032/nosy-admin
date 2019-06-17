@@ -4,6 +4,7 @@ import com.nosy.admin.nosyadmin.dto.EmailTemplateDto;
 import com.nosy.admin.nosyadmin.dto.InputSystemDto;
 import com.nosy.admin.nosyadmin.model.EmailProviderProperties;
 import com.nosy.admin.nosyadmin.model.EmailTemplate;
+import com.nosy.admin.nosyadmin.model.ReadyEmail;
 import com.nosy.admin.nosyadmin.service.EmailTemplateService;
 import com.nosy.admin.nosyadmin.service.InputSystemService;
 import com.nosy.admin.nosyadmin.utils.EmailTemplateMapper;
@@ -43,6 +44,12 @@ public class EmailAdminController {
         EmailTemplateMapper.INSTANCE.toEmailTemplateDto(emailTemplateService.postEmailTemplate(
             inputSystemId, emailTemplateId, emailProviderProperties, principal.getName())),
         HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/email/post")
+  public ResponseEntity<EmailTemplateDto> emailPost(@RequestBody ReadyEmail readyEmail) {
+      return new ResponseEntity<>(
+              EmailTemplateMapper.INSTANCE.toEmailTemplateDto(emailTemplateService.postEmail(readyEmail)), HttpStatus.OK);
   }
 
   @PostMapping(value = "/inputsystems", consumes = "application/json")
