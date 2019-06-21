@@ -33,7 +33,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
             pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
-
   @Bean
   public GrantedAuthoritiesMapper grantedAuthoritiesMapper() {
     SimpleAuthorityMapper mapper = new SimpleAuthorityMapper();
@@ -65,7 +64,12 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     http.csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers("/api/v1/nosy/inputsystems**", "/api/v1/nosy/auth/logout**", "/api/v1/nosy/users/profile**", "/api/v1/nosy/emailgroups**")
+        .antMatchers(
+            "/api/v1/nosy/inputsystems**",
+            "/api/v1/nosy/auth/logout**",
+            "/api/v1/nosy/users/profile**",
+            "/api/v1/nosy/emailgroups**",
+            "/api/v1/nosy/email**")
         .hasRole("NOSY-ROLE")
         .anyRequest()
         .permitAll();
@@ -91,6 +95,4 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     registrationBean.setEnabled(false);
     return registrationBean;
   }
-
-
 }
