@@ -111,7 +111,7 @@ public class EmailTemplateServiceTest {
         when(userRepository.findById(email)).thenReturn(Optional.of(user));
         doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
         assertEquals(emailTemplateId, emailTemplateServiceMock.getEmailTemplateById(inputSystemId, emailTemplateId, email).getEmailTemplateId()
-                );
+        );
         String emailTemplateString="EmailTemplate{emailTemplateId='emailTemplateId', emailTemplateName='Test Email Template Name', emailTemplateFromAddress='testFromAddress@nosy.tech', emailTemplateFromProvider=DEFAULT, emailTemplateTo=[testTo@nosy.tech], emailTemplateCc=[testCc@nosy.tech], emailTemplateText='Test Message', emailTemplateRetryTimes=0, emailTemplateRetryPeriod=1, emailTemplatePriority=1, emailTemplateSubject='Test Subject'}";
         assertEquals(emailTemplateString, emailTemplate.toString());
 
@@ -241,7 +241,7 @@ public class EmailTemplateServiceTest {
                 (anyString(), anyString());
 
 
-      emailTemplateServiceMock.postEmailTemplate(inputSystemId, emailTemplateId, emailProviderPropertiesTest, email);
+        emailTemplateServiceMock.postEmailTemplate(inputSystemId, emailTemplateId, emailProviderPropertiesTest, email);
         assertEquals("Test", readyEmail.getEmailProviderProperties().getUsername());
         assertEquals("Test Email Template Name", readyEmail.getEmailTemplate().getEmailTemplateName());
 
@@ -518,8 +518,63 @@ public class EmailTemplateServiceTest {
                 (anyString(), anyString());
         assertEquals(emailTemplate,emailTemplateServiceMock.updateEmailTemplate(emailTemplate, inputSystemId, emailTemplateId, email));
     }
+    @Test
+    public void updateEmailTemplateNotEqualsToCurrent() {
+        EmailTemplate emailTemplate1=new EmailTemplate();
+
+        emailTemplate1.setEmailTemplateName("dadasdas");
+
+        String currentEmailTemplateId="dasd";
+        EmailTemplate currentEmailTemplate=new EmailTemplate();
+        currentEmailTemplate.setEmailTemplateFromProvider(EmailFromProvider.DEFAULT);
+        Set<String> emailsCc=new HashSet<>();
+        emailsCc.add("testCc@nosy.tech");
+        currentEmailTemplate.setEmailTemplateCc(emailsCc);
+        Set<String> emailsTo=new HashSet<>();
+        emailsTo.add("testTo@nosy.tech");
+        currentEmailTemplate.setEmailTemplateId(currentEmailTemplateId);
+        currentEmailTemplate.setEmailTemplateTo(emailsTo);
+        currentEmailTemplate.setEmailTemplateText("Test Message");
+        currentEmailTemplate.setEmailTemplateSubject("Test Subject");
+        currentEmailTemplate.setEmailTemplateName("TestName");
+        currentEmailTemplate.setEmailTemplateRetryPeriod(1);
+        currentEmailTemplate.setEmailTemplatePriority(1);
+        currentEmailTemplate.setEmailTemplateFromAddress("testFromAddress@nosy.tech");
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(currentEmailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId
+                (anyString(), anyString());
+        assertEquals(emailTemplate1.getEmailTemplateName(),emailTemplateServiceMock.
+                updateEmailTemplate(emailTemplate1, inputSystemId, emailTemplateId, email).getEmailTemplateName());
+    }
+    @Test(expected = EmailTemplateNameInvalidException.class)
+    public void updateEmailTemplateCurrentIsEmpty() {
+        EmailTemplate emailTemplate1=new EmailTemplate();
+        emailTemplate.setEmailTemplateName("");
+        String currentEmailTemplateId="dasd";
+        EmailTemplate currentEmailTemplate=new EmailTemplate();
+        currentEmailTemplate.setEmailTemplateFromProvider(EmailFromProvider.DEFAULT);
+        Set<String> emailsCc=new HashSet<>();
+        emailsCc.add("testCc@nosy.tech");
+        currentEmailTemplate.setEmailTemplateCc(emailsCc);
+        Set<String> emailsTo=new HashSet<>();
+        emailsTo.add("testTo@nosy.tech");
+        currentEmailTemplate.setEmailTemplateId(currentEmailTemplateId);
+        currentEmailTemplate.setEmailTemplateTo(emailsTo);
+        currentEmailTemplate.setEmailTemplateText("Test Message");
+        currentEmailTemplate.setEmailTemplateSubject("Test Subject");
+        currentEmailTemplate.setEmailTemplateName("TestName");
+        currentEmailTemplate.setEmailTemplateRetryPeriod(1);
+        currentEmailTemplate.setEmailTemplatePriority(1);
+        currentEmailTemplate.setEmailTemplateFromAddress("testFromAddress@nosy.tech");
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(currentEmailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId
+                (anyString(), anyString());
+        assertEquals(emailTemplate,emailTemplateServiceMock.updateEmailTemplate(emailTemplate1, inputSystemId, emailTemplateId, email));
+    }
     @Test(expected = EmailTemplateNotFoundException.class)
-    public void updateEmailTemplateCurrentNotEqual() {
+    public void updateEmailTemplateNull() {
         EmailTemplate emailTemplate1=null;
 
         String currentEmailTemplateId="dasd";
@@ -544,4 +599,6 @@ public class EmailTemplateServiceTest {
                 (anyString(), anyString());
         assertEquals(emailTemplate,emailTemplateServiceMock.updateEmailTemplate(emailTemplate1, inputSystemId, emailTemplateId, email));
     }
+
+
 }
