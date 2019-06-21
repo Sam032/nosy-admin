@@ -220,6 +220,12 @@ public class EmailTemplateServiceTest {
 
     }
 
+    @Test
+    public void postEmail() {
+        assertEquals("Test", readyEmail.getEmailProviderProperties().getUsername());
+        assertEquals("Test Email Template Name", readyEmail.getEmailTemplate().getEmailTemplateName());
+    }
+
     @Test(expected = UsernameAndPasswordAreNotProvidedForNonDefaultException.class)
     public void postEmailTemplateNonDefaultWithoutPassword() {
 
