@@ -103,4 +103,12 @@ public class UserServiceTest {
         user.setEmail("test@nosy.tech");
         assertEquals(user.getEmail(),userService.addUser(userWithInvalidPassword).getEmail());
     }
+    @Test(expected = PasswordIsNotValidException.class)
+    public void addUserWithInvalidLength5Password() {
+        User userWithInvalidPassword=new User();
+        user.setEmail("test@nosy.tech");
+        user.setPassword("12345");
+
+        assertEquals(user.getEmail(),userService.addUser(userWithInvalidPassword).getEmail());
+    }
 }

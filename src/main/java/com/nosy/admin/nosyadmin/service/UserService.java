@@ -48,6 +48,6 @@ public class UserService {
   }
 
   private boolean isValidPassword(String password) {
-    return null != password && password.length() > 1;
+    return null != password && password.length() > 5;
   }
 }
