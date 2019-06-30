@@ -82,10 +82,10 @@ public class EmailAdminController {
   }
 
   @PostMapping(value = "/inputsystems/{inputSystemId}/emailtemplates")
-  public ResponseEntity<EmailTemplateDto> newEmailTemplate(
+  public ResponseEntity<EmailTemplateDto> newEmailTemplate(Principal principal,
       @PathVariable String inputSystemId,
-      @RequestBody EmailTemplateDto emailTemplateDto,
-      Principal principal) {
+      @RequestBody EmailTemplateDto emailTemplateDto
+      ) {
     return new ResponseEntity<>( EmailTemplateMapper.INSTANCE.toEmailTemplateDto(
         emailTemplateService.newEmailTemplate(
                 EmailTemplateMapper.INSTANCE.toEmailTemplate(emailTemplateDto),

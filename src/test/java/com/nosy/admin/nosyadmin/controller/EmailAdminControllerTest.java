@@ -81,7 +81,7 @@ public class EmailAdminControllerTest {
     public void newEmailTemplate() {
         Principal principal=mock(Principal.class);
         assertEquals(HttpStatus.CREATED, emailAdminController.
-                newEmailTemplate("inputSystemId",null,principal).getStatusCode());
+                newEmailTemplate(principal, "inputSystemId",null).getStatusCode());
     }
 
     @Test

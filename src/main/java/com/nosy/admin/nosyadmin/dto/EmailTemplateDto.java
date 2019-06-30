@@ -1,5 +1,6 @@
 package com.nosy.admin.nosyadmin.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nosy.admin.nosyadmin.model.EmailFromProvider;
 import com.nosy.admin.nosyadmin.model.InputSystem;
 
@@ -29,6 +30,7 @@ public class EmailTemplateDto {
   private int retryPeriod;
 
   private int priority;
+  @JsonIgnore
   @NotNull private InputSystem inputSystem;
 
   public String getId() {

@@ -13,11 +13,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class InputSystemMapperTest {
-//    InputSystemMapper INSTANCE = Mappers.getMapper( InputSystemMapper.class );
-//
-//    InputSystemDto toInputSystemDto(InputSystem inputSystem);
-//    InputSystem toInputSystem(InputSystemDto emailTemplateDto);
-
     private InputSystemDto inputSystemDto=new InputSystemDto();
     private InputSystem inputSystem=new InputSystem();
     @Before
