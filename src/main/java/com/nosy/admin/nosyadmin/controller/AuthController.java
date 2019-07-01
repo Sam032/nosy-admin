@@ -63,7 +63,6 @@ public class AuthController {
 
   @GetMapping(value = "/users")
   public ResponseEntity<UserDto> getUserProfile(HttpServletRequest request) {
-
     return new ResponseEntity<>(UserMapper.INSTANCE.toUserDto(userService.getUserInfo(request)), HttpStatus.OK);
   }
 }

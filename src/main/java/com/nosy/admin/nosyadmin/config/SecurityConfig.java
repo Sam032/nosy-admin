@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,6 +62,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   @Override
   protected void configure(final HttpSecurity http) throws Exception {
     super.configure(http);
+    http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.GET, "/api/v1/nosy/users**").hasRole("NOSY-ROLE");
     http.csrf()
         .disable()
         .authorizeRequests()
@@ -68,7 +70,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 "/api/v1/nosy/inputsystems/**",
             "/api/v1/nosy/inputsystems**",
             "/api/v1/nosy/auth/logout**",
-            "/api/v1/nosy/users**",
             "/api/v1/nosy/emailgroups**",
             "/api/v1/nosy/email**")
         .hasRole("NOSY-ROLE")
