@@ -1,6 +1,8 @@
 package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
+import com.nosy.admin.nosyadmin.integrations.ArtemisProducer;
+import com.nosy.admin.nosyadmin.integrations.KafkaProducer;
 import com.nosy.admin.nosyadmin.model.*;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
 import com.nosy.admin.nosyadmin.repository.InputSystemRepository;
@@ -11,6 +13,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -18,7 +23,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-
+@TestPropertySource(properties = { "NOSY_BROKER_TYPE=kafka" })
 public class EmailTemplateServiceTest {
 
     @InjectMocks
@@ -28,9 +33,11 @@ public class EmailTemplateServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private Producer producer;
-    @Mock
     private InputSystemRepository inputSystemRepository;
+    @Mock
+    private KafkaProducer kafkaProducer;
+    @Mock
+    private ArtemisProducer artemisProducer;
     @Mock
     ReadyEmail readyEmail;
     private EmailProviderProperties emailProviderProperties;
@@ -82,9 +89,7 @@ public class EmailTemplateServiceTest {
 
         readyEmail.setEmailProviderProperties(emailProviderProperties);
 
-
-
-
+        ReflectionTestUtils.setField(emailTemplateServiceMock, "nosyBrokerType", "kafka");
     }
 
     @Before

@@ -1,6 +1,8 @@
 package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
+import com.nosy.admin.nosyadmin.integrations.ArtemisProducer;
+import com.nosy.admin.nosyadmin.integrations.KafkaProducer;
 import com.nosy.admin.nosyadmin.model.*;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
 import com.nosy.admin.nosyadmin.repository.InputSystemRepository;
@@ -17,7 +19,8 @@ import java.util.stream.Stream;
 public class EmailTemplateService {
 
   private EmailTemplateRepository emailTemplateRepository;
-  private Producer producer;
+  private KafkaProducer kafkaProducer;
+  private ArtemisProducer artemisProducer;
   private InputSystemRepository inputSystemRepository;
   private ReadyEmail readyEmail;
   private UserRepository userRepository;
@@ -25,14 +28,19 @@ public class EmailTemplateService {
   @Value("${default.nosy.from.address}")
   private String defaultNosyFromAddress;
 
+  @Value("${NOSY_BROKER_TYPE}")
+  private String nosyBrokerType;
+
   @Autowired
   public EmailTemplateService(
-      EmailTemplateRepository emailTemplateRepository,
-      Producer producer,
-      InputSystemRepository inputSystemRepository,
-      ReadyEmail readyEmail,
-      UserRepository userRepository) {
-    this.producer = producer;
+          EmailTemplateRepository emailTemplateRepository,
+          KafkaProducer kafkaProducer,
+          ArtemisProducer artemisProducer,
+          InputSystemRepository inputSystemRepository,
+          ReadyEmail readyEmail,
+          UserRepository userRepository) {
+    this.kafkaProducer = kafkaProducer;
+    this.artemisProducer = artemisProducer;
     this.emailTemplateRepository = emailTemplateRepository;
     this.inputSystemRepository = inputSystemRepository;
     this.userRepository = userRepository;
@@ -139,7 +147,9 @@ public class EmailTemplateService {
     emailTemplate.setEmailTemplateText(text);
     readyEmail.setEmailTemplate(emailTemplate);
     readyEmail.setEmailProviderProperties(emailProviderProperties);
-    producer.sendMessage(readyEmail.toString());
+
+    sendEmail(readyEmail);
+
     return emailTemplate;
   }
 
@@ -184,5 +194,19 @@ public class EmailTemplateService {
   private boolean checkUsername(String email) {
 
     return userRepository.findById(email).isPresent();
+  }
+
+  public void sendEmail(ReadyEmail readyEmail) {
+    switch (nosyBrokerType) {
+      case "artemis": {
+        artemisProducer.sendReadyEmail(readyEmail);
+        break;
+      }
+      case "kafka":
+      default: {
+        kafkaProducer.sendMessage(readyEmail.toString());
+        break;
+      }
+    }
   }
 }
