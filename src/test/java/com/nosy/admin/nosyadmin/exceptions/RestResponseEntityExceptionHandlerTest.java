@@ -135,7 +135,15 @@ public class RestResponseEntityExceptionHandlerTest {
         throw new InvalidUsernameAndPasswordException();
     }
 
+    @Test
+    public void emailFeedExistException() {
+        assertEquals(HttpStatus.CONFLICT, restResponseEntityExceptionHandler.emailFeedExistException().getStatusCode());
+    }
 
+    @Test
+    public void emailFeedNotFoundException() {
+        assertEquals(HttpStatus.NOT_FOUND, restResponseEntityExceptionHandler.emailFeedNotFound().getStatusCode());
+    }
 
 }
 

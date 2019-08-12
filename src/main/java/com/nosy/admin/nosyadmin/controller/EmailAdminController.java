@@ -1,12 +1,15 @@
 package com.nosy.admin.nosyadmin.controller;
 
+import com.nosy.admin.nosyadmin.dto.EmailFeedDto;
 import com.nosy.admin.nosyadmin.dto.EmailTemplateDto;
 import com.nosy.admin.nosyadmin.dto.InputSystemDto;
 import com.nosy.admin.nosyadmin.model.EmailProviderProperties;
 import com.nosy.admin.nosyadmin.model.EmailTemplate;
 import com.nosy.admin.nosyadmin.model.ReadyEmail;
+import com.nosy.admin.nosyadmin.service.EmailFeedService;
 import com.nosy.admin.nosyadmin.service.EmailTemplateService;
 import com.nosy.admin.nosyadmin.service.InputSystemService;
+import com.nosy.admin.nosyadmin.utils.EmailFeedMapper;
 import com.nosy.admin.nosyadmin.utils.EmailTemplateMapper;
 import com.nosy.admin.nosyadmin.utils.InputSystemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +25,20 @@ import java.util.Set;
 @CrossOrigin(exposedHeaders = "Access-Control-Allow-Origin")
 @RequestMapping("/api/v1/nosy")
 public class EmailAdminController {
+
   private EmailTemplateService emailTemplateService;
   private InputSystemService inputSystemService;
+  private EmailFeedService emailFeedService;
 
   @Autowired
   public EmailAdminController(
       EmailTemplateService emailTemplateService,
-      InputSystemService inputSystemService) {
+      InputSystemService inputSystemService,
+      EmailFeedService emailFeedService
+  ) {
     this.emailTemplateService = emailTemplateService;
     this.inputSystemService = inputSystemService;
+    this.emailFeedService = emailFeedService;
   }
 
   @PostMapping(value = "/inputsystems/{inputSystemId}/emailtemplates/{emailTemplateId}/post")
@@ -144,5 +152,59 @@ public class EmailAdminController {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
+  @PostMapping(value = "/inputsystems/{inputSystemId}/emailfeeds")
+  public ResponseEntity<EmailFeedDto> newEmailFeed(
+          @PathVariable String inputSystemId,
+          @RequestBody EmailFeedDto emailFeedDto,
+          Principal principal
+  ) {
+      return new ResponseEntity<>(
+              EmailFeedMapper.INSTANCE.toEmailFeedDto(emailFeedService.newEmailFeed(
+                      inputSystemId,
+                      EmailFeedMapper.INSTANCE.toEmailFeed(emailFeedDto),
+                      principal.getName()
+              )), HttpStatus.CREATED
+      );
+  }
+
+  @DeleteMapping(value = "/inputsystems/{inputSystemId}/emailfeeds/{emailFeedId}")
+  public ResponseEntity<String> deleteEmailFeed(
+          @PathVariable String inputSystemId,
+          @PathVariable String emailFeedId,
+          Principal principal
+  ) {
+    emailFeedService.deleteEmailFeed(inputSystemId, emailFeedId, principal.getName());
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @PutMapping(value = "/inputsystems/{inputSystemId}/emailfeeds/{emailFeedId}/subscribe")
+  public ResponseEntity<EmailFeedDto> subscribeToEmailFeed(
+          @PathVariable String inputSystemId,
+          @PathVariable String emailFeedId,
+          Principal principal
+  ) {
+      return new ResponseEntity<>(
+              EmailFeedMapper.INSTANCE.toEmailFeedDto(emailFeedService.subscribeToEmailFeed(
+                      inputSystemId,
+                      emailFeedId,
+                      principal.getName()
+              )), HttpStatus.OK
+      );
+  }
+
+  @PutMapping(value = "/inputsystems/{inputSystemId}/emailfeeds/{emailFeedId}/unsubscribe")
+  public ResponseEntity<EmailFeedDto> unsubscribeToEmailFeed(
+          @PathVariable String inputSystemId,
+          @PathVariable String emailFeedId,
+          Principal principal
+  ) {
+    return new ResponseEntity<>(
+            EmailFeedMapper.INSTANCE.toEmailFeedDto(emailFeedService.unsubscribeToEmailFeed(
+                    inputSystemId,
+                    emailFeedId,
+                    principal.getName()
+            )), HttpStatus.OK
+    );
+  }
 
 }
