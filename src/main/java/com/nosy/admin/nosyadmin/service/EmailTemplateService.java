@@ -198,15 +198,13 @@ public class EmailTemplateService {
 
   public void sendEmail(ReadyEmail readyEmail) {
     switch (nosyBrokerType) {
-      case "artemis": {
+      case "artemis":
         artemisProducer.sendReadyEmail(readyEmail);
         break;
-      }
       case "kafka":
-      default: {
+      default:
         kafkaProducer.sendMessage(readyEmail.toString());
         break;
-      }
     }
   }
 }

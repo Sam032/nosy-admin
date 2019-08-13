@@ -16,10 +16,9 @@ public class KafkaProducerTest {
     @InjectMocks
     private KafkaProducer kafkaProducer;
 
-    @Test()
+    @Test(expected = Test.None.class)
     public void sendMessage() {
-        String message = "Test Message";
-        kafkaProducer.sendMessage(message);
+        kafkaProducer.sendMessage("Test Message");
     }
 
 }
