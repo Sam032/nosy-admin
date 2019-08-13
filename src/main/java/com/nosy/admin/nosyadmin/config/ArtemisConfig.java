@@ -2,7 +2,6 @@ package com.nosy.admin.nosyadmin.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nosy.admin.nosyadmin.model.ReadyEmail;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
@@ -17,9 +16,6 @@ import java.util.Map;
 @Configuration
 public class ArtemisConfig {
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
-
     @Bean
     public MessageConverter messageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
@@ -33,7 +29,7 @@ public class ArtemisConfig {
     }
 
     @Bean
-    public JmsTemplate jmsTemplate(){
+    public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory){
         JmsTemplate template = new JmsTemplate();
         template.setMessageConverter(messageConverter());
         template.setConnectionFactory(connectionFactory);
