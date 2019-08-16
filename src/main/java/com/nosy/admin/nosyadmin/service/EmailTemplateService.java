@@ -1,9 +1,8 @@
 package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
-import com.nosy.admin.nosyadmin.integrations.ArtemisProducer;
-import com.nosy.admin.nosyadmin.integrations.KafkaProducer;
 import com.nosy.admin.nosyadmin.model.*;
+import com.nosy.admin.nosyadmin.repository.EmailFeedRepository;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
 import com.nosy.admin.nosyadmin.repository.InputSystemRepository;
 import com.nosy.admin.nosyadmin.repository.UserRepository;
@@ -19,32 +18,29 @@ import java.util.stream.Stream;
 public class EmailTemplateService {
 
   private EmailTemplateRepository emailTemplateRepository;
-  private KafkaProducer kafkaProducer;
-  private ArtemisProducer artemisProducer;
   private InputSystemRepository inputSystemRepository;
   private ReadyEmail readyEmail;
   private UserRepository userRepository;
+  private EmailFeedRepository emailFeedRepository;
+  private SenderService senderService;
 
   @Value("${default.nosy.from.address}")
   private String defaultNosyFromAddress;
 
-  @Value("${NOSY_BROKER_TYPE}")
-  private String nosyBrokerType;
-
   @Autowired
   public EmailTemplateService(
           EmailTemplateRepository emailTemplateRepository,
-          KafkaProducer kafkaProducer,
-          ArtemisProducer artemisProducer,
           InputSystemRepository inputSystemRepository,
           ReadyEmail readyEmail,
-          UserRepository userRepository) {
-    this.kafkaProducer = kafkaProducer;
-    this.artemisProducer = artemisProducer;
+          UserRepository userRepository,
+          EmailFeedRepository emailFeedRepository,
+          SenderService senderService) {
     this.emailTemplateRepository = emailTemplateRepository;
     this.inputSystemRepository = inputSystemRepository;
     this.userRepository = userRepository;
     this.readyEmail = readyEmail;
+    this.emailFeedRepository = emailFeedRepository;
+    this.senderService = senderService;
   }
 
   public EmailTemplate getEmailTemplateById(
@@ -148,7 +144,7 @@ public class EmailTemplateService {
     readyEmail.setEmailTemplate(emailTemplate);
     readyEmail.setEmailProviderProperties(emailProviderProperties);
 
-    sendEmail(readyEmail);
+    senderService.sendReadyEmail(readyEmail);
 
     return emailTemplate;
   }
@@ -196,17 +192,22 @@ public class EmailTemplateService {
     return userRepository.findById(email).isPresent();
   }
 
-  public void sendEmail(ReadyEmail readyEmail) {
-    switch (nosyBrokerType) {
-      case "artemis": {
-        artemisProducer.sendReadyEmail(readyEmail);
-        break;
-      }
-      case "kafka":
-      default: {
-        kafkaProducer.sendMessage(readyEmail.toString());
-        break;
-      }
+  public EmailTemplate addEmailFeedToEmailTemplate(String inputSystemId, String emailTemplateId, String emailFeedId, String email) {
+    EmailTemplate currentEmailTemplate = getEmailTemplateById(emailTemplateId, inputSystemId, email);
+
+    EmailFeed emailFeed = emailFeedRepository.findEmailFeedByEmailFeedIdAndInputSystemId(emailFeedId, inputSystemId);
+    if (emailFeed == null) {
+      throw new EmailFeedNotFoundException();
     }
+
+    if (currentEmailTemplate.getEmailFeeds().stream().anyMatch(ef -> ef.getEmailFeedId().equals(emailFeedId))) {
+      throw new EmailFeedExistException();
+    }
+
+    emailFeed.setEmailTemplate(currentEmailTemplate);
+    emailFeedRepository.save(emailFeed);
+
+    return currentEmailTemplate;
   }
+
 }

@@ -1,6 +1,7 @@
 package com.nosy.admin.nosyadmin.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nosy.admin.nosyadmin.model.EmailFeed;
 import com.nosy.admin.nosyadmin.model.EmailFromProvider;
 import com.nosy.admin.nosyadmin.model.InputSystem;
 
@@ -32,6 +33,9 @@ public class EmailTemplateDto {
   private int priority;
   @JsonIgnore
   @NotNull private InputSystem inputSystem;
+
+  @JsonIgnore
+  private EmailFeed emailFeed;
 
   public String getId() {
     return id;

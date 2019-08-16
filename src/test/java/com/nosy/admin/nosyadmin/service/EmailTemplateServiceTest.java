@@ -4,6 +4,7 @@ import com.nosy.admin.nosyadmin.exceptions.*;
 import com.nosy.admin.nosyadmin.integrations.ArtemisProducer;
 import com.nosy.admin.nosyadmin.integrations.KafkaProducer;
 import com.nosy.admin.nosyadmin.model.*;
+import com.nosy.admin.nosyadmin.repository.EmailFeedRepository;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
 import com.nosy.admin.nosyadmin.repository.InputSystemRepository;
 import com.nosy.admin.nosyadmin.repository.UserRepository;
@@ -23,7 +24,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-@TestPropertySource(properties = { "NOSY_BROKER_TYPE=kafka" })
 public class EmailTemplateServiceTest {
 
     @InjectMocks
@@ -35,9 +35,9 @@ public class EmailTemplateServiceTest {
     @Mock
     private InputSystemRepository inputSystemRepository;
     @Mock
-    private KafkaProducer kafkaProducer;
+    private EmailFeedRepository emailFeedRepository;
     @Mock
-    private ArtemisProducer artemisProducer;
+    private SenderService senderService;
     @Mock
     ReadyEmail readyEmail;
     private EmailProviderProperties emailProviderProperties;
@@ -47,6 +47,7 @@ public class EmailTemplateServiceTest {
     private EmailTemplate emailTemplate;
     private User user;
     private InputSystem inputSystem;
+    private EmailFeed emailFeed;
 
     private void setVariables(){
         emailTemplateId="emailTemplateId";
@@ -68,6 +69,15 @@ public class EmailTemplateServiceTest {
         emailTemplate.setEmailTemplateRetryPeriod(1);
         emailTemplate.setEmailTemplatePriority(1);
         emailTemplate.setEmailTemplateFromAddress("testFromAddress@nosy.tech");
+
+        emailFeed = new EmailFeed();
+        emailFeed.setEmailFeedId("emailFeedId");
+        emailFeed.setEmailFeedName("emailFeedName");
+        emailFeed.setEmailFeedAddress("emailFeedAddress");
+        emailFeed.setEmailTemplate(emailTemplate);
+        emailFeed.setInputSystem(inputSystem);
+        emailFeed.setEmailFeedSubscribers(Collections.singleton("emailFeedSubscriber"));
+
         inputSystem=new InputSystem();
         user=new User();
         user.setEmail(email);
@@ -78,6 +88,7 @@ public class EmailTemplateServiceTest {
         inputSystem.setInputSystemId(inputSystemId);
         inputSystem.setUser(user);
         emailTemplate.setInputSystem(inputSystem);
+        emailTemplate.setEmailFeeds(Collections.emptySet());
 
         readyEmail=new ReadyEmail();
         readyEmail.setEmailTemplate(emailTemplate);
@@ -88,8 +99,6 @@ public class EmailTemplateServiceTest {
         emailProviderProperties.setUsername("Test");
 
         readyEmail.setEmailProviderProperties(emailProviderProperties);
-
-        ReflectionTestUtils.setField(emailTemplateServiceMock, "nosyBrokerType", "kafka");
     }
 
     @Before
@@ -605,5 +614,33 @@ public class EmailTemplateServiceTest {
         assertEquals(emailTemplate,emailTemplateServiceMock.updateEmailTemplate(emailTemplate1, inputSystemId, emailTemplateId, email));
     }
 
+    @Test
+    public void addEmailFeedToEmailTemplate() {
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        doReturn(emailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId(anyString(), anyString());
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addEmailFeedToEmailTemplate(inputSystemId, emailTemplateId, "emailFeedId", email).getEmailTemplateId());
+    }
+
+    @Test(expected = EmailFeedNotFoundException.class)
+    public void addEmailFeedToEmailTemplateEmailFeedNotFound() {
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        doReturn(emailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId(anyString(), anyString());
+        doReturn(null).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addEmailFeedToEmailTemplate(inputSystemId, emailTemplateId, "emailFeedId", email).getEmailTemplateId());
+    }
+
+    @Test(expected = EmailFeedExistException.class)
+    public void AddEmailFeedToEmailTemplateEmailFeedExsists() {
+        emailTemplate.setEmailFeeds(Collections.singleton(emailFeed));
+
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        doReturn(emailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId(anyString(), anyString());
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addEmailFeedToEmailTemplate(inputSystemId, emailTemplateId, emailFeed.getEmailFeedId(), email).getEmailTemplateId());
+    }
 
 }

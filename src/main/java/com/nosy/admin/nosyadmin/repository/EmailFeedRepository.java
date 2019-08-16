@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Transactional
 @Repository
@@ -25,5 +26,8 @@ public interface EmailFeedRepository extends JpaRepository<EmailFeed, String> {
             @Param("emailFeedId") String emailFeedId,
             @Param("inputSystemId") String inputSystemId
     );
+
+    @Query("from EmailFeed where input_system_id=:inputSystemId")
+    List<EmailFeed> findEmailFeedsByInputSystemId(@Param("inputSystemId") String inputSystemId);
 
 }

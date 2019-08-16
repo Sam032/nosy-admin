@@ -2,6 +2,7 @@ package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
 import com.nosy.admin.nosyadmin.model.EmailFeed;
+import com.nosy.admin.nosyadmin.model.EmailProviderProperties;
 import com.nosy.admin.nosyadmin.model.InputSystem;
 import com.nosy.admin.nosyadmin.model.User;
 import com.nosy.admin.nosyadmin.repository.EmailFeedRepository;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.validation.constraints.Email;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -36,6 +39,9 @@ public class EmailFeedServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private SenderService senderService;
 
     private EmailFeed emailFeed;
     private InputSystem inputSystem;
@@ -90,6 +96,50 @@ public class EmailFeedServiceTest {
         doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
         doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedNameAndInputSystemId(anyString(), anyString());
         assertEquals(emailFeedId, emailFeedServiceMock.newEmailFeed(inputSystemId, emailFeed, email).getEmailFeedId());
+    }
+
+    @Test
+    public void updateEmailFeedTest() {
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailFeedId, emailFeedServiceMock.updateEmailFeed(inputSystemId, emailFeedId, emailFeed, email).getEmailFeedId());
+    }
+
+    @Test(expected = NotAuthenticatedException.class)
+    public void updateEmailFeedNotAuthenticated() {
+        when(userRepository.findById(email)).thenReturn(Optional.empty());
+        assertEquals(emailFeedId, emailFeedServiceMock.updateEmailFeed(inputSystemId, emailFeedId, emailFeed, email).getEmailFeedId());
+    }
+
+    @Test(expected = EmailFeedNotFoundException.class)
+    public void updateEmailFeedNotFound() {
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        assertEquals(emailFeedId, emailFeedServiceMock.updateEmailFeed(inputSystemId, emailFeedId,null, email).getEmailFeedId());
+    }
+
+    @Test(expected = EmailFeedNotFoundException.class)
+    public void updateEmailFeedNull() {
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailFeedId, emailFeedServiceMock.updateEmailFeed(inputSystemId, emailFeedId,null, email).getEmailFeedId());
+    }
+
+    @Test(expected = EmailFeedNameInvalidException.class)
+    public void updateEmailFeedNameInvalid() {
+        EmailFeed emailFeedInvalid = new EmailFeed();
+        emailFeedInvalid.setEmailFeedName("EmailFeedName");
+
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedNameAndInputSystemId(anyString(), anyString());
+        assertEquals(emailFeedId, emailFeedServiceMock.updateEmailFeed(inputSystemId, emailFeedId, emailFeedInvalid, email).getEmailFeedId());
+    }
+
+    @Test
+    public void getListOfEmailFeeds() {
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        doReturn(Collections.singletonList(emailFeed)).when(emailFeedRepository).findEmailFeedsByInputSystemId(anyString());
+        assertEquals(emailFeedId, emailFeedServiceMock.getListOfEmailFeeds(inputSystemId, email).get(0).getEmailFeedId());
     }
 
     @Test
@@ -178,6 +228,30 @@ public class EmailFeedServiceTest {
         doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
         doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
         assertEquals(emailFeedId, emailFeedServiceMock.unsubscribeToEmailFeed(inputSystemId, emailFeedId, email).getEmailFeedId());
+    }
+
+    @Test
+    public void postEmailFeed() {
+        EmailProviderProperties emailProviderProperties = new EmailProviderProperties();
+        emailProviderProperties.setUsername("EmailProviderUsername");
+        emailProviderProperties.setPassword("EmailProviderPassword");
+        emailProviderProperties.setPlaceholders(Collections.emptyList());
+
+        when(userRepository.findById(email)).thenReturn(Optional.of(user));
+        doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
+        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailFeedId, emailFeedServiceMock.postEmailFeed(inputSystemId, emailFeedId, emailProviderProperties, email).getEmailFeedId());
+    }
+
+    @Test(expected = NotAuthenticatedException.class)
+    public void postEmailFeedNotAuthenticated() {
+        EmailProviderProperties emailProviderProperties = new EmailProviderProperties();
+        emailProviderProperties.setUsername("EmailProviderUsername");
+        emailProviderProperties.setPassword("EmailProviderPassword");
+        emailProviderProperties.setPlaceholders(Collections.emptyList());
+
+        when(userRepository.findById(email)).thenReturn(Optional.empty());
+        assertEquals(emailFeedId, emailFeedServiceMock.postEmailFeed(inputSystemId, emailFeedId, emailProviderProperties, email).getEmailFeedId());
     }
 
 }

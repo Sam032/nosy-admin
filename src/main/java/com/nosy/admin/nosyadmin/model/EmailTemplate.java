@@ -60,6 +60,9 @@ public class EmailTemplate {
 
   @NotNull private String emailTemplateSubject;
 
+  @OneToMany(mappedBy = "emailTemplate")
+  private Set<EmailFeed> emailFeeds;
+
   @PrePersist
   protected void onCreate() {
     if (emailTemplateName == null || emailTemplateName.isEmpty()) {
@@ -162,6 +165,14 @@ public class EmailTemplate {
 
   public void setEmailTemplateSubject(String emailTemplateSubject) {
     this.emailTemplateSubject = emailTemplateSubject;
+  }
+
+  public Set<EmailFeed> getEmailFeeds() {
+    return emailFeeds;
+  }
+
+  public void setEmailFeeds(Set<EmailFeed> emailFeeds) {
+    this.emailFeeds = emailFeeds;
   }
 
   @Override

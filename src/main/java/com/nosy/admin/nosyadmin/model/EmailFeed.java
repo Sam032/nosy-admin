@@ -41,6 +41,10 @@ public class EmailFeed {
     @JoinColumn(name = "input_system_id")
     private InputSystem inputSystem;
 
+    @ManyToOne
+    @JoinColumn(name = "email_template_id")
+    private EmailTemplate emailTemplate;
+
     @PrePersist
     protected void onCreate() {
         if (emailFeedName == null || emailFeedName.isEmpty()) {
@@ -86,5 +90,13 @@ public class EmailFeed {
 
     public void setInputSystem(InputSystem inputSystem) {
         this.inputSystem = inputSystem;
+    }
+
+    public EmailTemplate getEmailTemplate() {
+        return emailTemplate;
+    }
+
+    public void setEmailTemplate(EmailTemplate emailTemplate) {
+        this.emailTemplate = emailTemplate;
     }
 }
