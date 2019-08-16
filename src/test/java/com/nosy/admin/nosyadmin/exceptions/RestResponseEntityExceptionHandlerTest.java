@@ -2,6 +2,7 @@ package com.nosy.admin.nosyadmin.exceptions;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.keycloak.authorization.client.util.Http;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -143,6 +144,16 @@ public class RestResponseEntityExceptionHandlerTest {
     @Test
     public void emailFeedNotFoundException() {
         assertEquals(HttpStatus.NOT_FOUND, restResponseEntityExceptionHandler.emailFeedNotFound().getStatusCode());
+    }
+
+    @Test
+    public void emailFeedAlreadySubscribedException() {
+        assertEquals(HttpStatus.CONFLICT, restResponseEntityExceptionHandler.emailFeedAlreadySubscribed().getStatusCode());
+    }
+
+    @Test
+    public void emailFeedNotSubscribed() {
+        assertEquals(HttpStatus.BAD_REQUEST, restResponseEntityExceptionHandler.emailFeedNotSubscribed().getStatusCode());
     }
 
 }

@@ -1,8 +1,6 @@
 package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
-import com.nosy.admin.nosyadmin.integrations.ArtemisProducer;
-import com.nosy.admin.nosyadmin.integrations.KafkaProducer;
 import com.nosy.admin.nosyadmin.model.*;
 import com.nosy.admin.nosyadmin.repository.EmailFeedRepository;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
@@ -14,9 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -232,12 +227,6 @@ public class EmailTemplateServiceTest {
         assertEquals("Test", readyEmail.getEmailProviderProperties().getUsername());
         assertEquals("Test Email Template Name", readyEmail.getEmailTemplate().getEmailTemplateName());
 
-    }
-
-    @Test
-    public void postEmail() {
-        assertEquals("Test", readyEmail.getEmailProviderProperties().getUsername());
-        assertEquals("Test Email Template Name", readyEmail.getEmailTemplate().getEmailTemplateName());
     }
 
     @Test(expected = UsernameAndPasswordAreNotProvidedForNonDefaultException.class)

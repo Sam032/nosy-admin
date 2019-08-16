@@ -8,11 +8,9 @@ import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticatio
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakPreAuthActionsFilter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +30,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
         @ComponentScan.Filter(
             type = FilterType.REGEX,
             pattern = "org.keycloak.adapters.springsecurity.management.HttpSessionManager"))
+@ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
 
   @Bean
