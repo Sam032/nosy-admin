@@ -17,10 +17,9 @@ public class ArtemisProducerTest {
     @InjectMocks
     private ArtemisProducer artemisProducer;
 
-    @Test()
+    @Test(expected = Test.None.class)
     public void sendMessage() {
-        ReadyEmail readyEmail = new ReadyEmail();
-        artemisProducer.sendReadyEmail(readyEmail);
+        artemisProducer.sendReadyEmail(new ReadyEmail());
     }
 
 }
