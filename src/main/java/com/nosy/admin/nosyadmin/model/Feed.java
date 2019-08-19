@@ -2,7 +2,7 @@ package com.nosy.admin.nosyadmin.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.nosy.admin.nosyadmin.exceptions.EmailFeedNameInvalidException;
+import com.nosy.admin.nosyadmin.exceptions.FeedNameInvalidException;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -14,26 +14,23 @@ import java.util.Set;
 
 @Entity
 @DynamicInsert
-@Table(name = "emailFeed", uniqueConstraints = @UniqueConstraint(columnNames = {"emailFeedName", "input_system_id"}))
+@Table(name = "feed", uniqueConstraints = @UniqueConstraint(columnNames = {"feedName", "input_system_id"}))
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class EmailFeed {
+public class Feed {
 
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Id
     @NotNull
-    private String emailFeedId;
+    private String feedId;
 
     @NotNull
-    private String emailFeedName;
-
-    @NotNull
-    private String emailFeedAddress;
+    private String feedName;
 
     @NotNull
     @ElementCollection
-    @JoinTable(name = "email_feed_subscribers", joinColumns = @JoinColumn(name = "email_feed_id"))
-    private Set<@NotEmpty @Email String> emailFeedSubscribers;
+    @JoinTable(name = "feed_subscribers", joinColumns = @JoinColumn(name = "feed_id"))
+    private Set<@NotEmpty @Email String> feedSubscribers;
 
     @NotNull
     @ManyToOne
@@ -47,41 +44,33 @@ public class EmailFeed {
 
     @PrePersist
     protected void onCreate() {
-        if (emailFeedName == null || emailFeedName.isEmpty()) {
-            throw new EmailFeedNameInvalidException();
+        if (feedName == null || feedName.isEmpty()) {
+            throw new FeedNameInvalidException();
         }
     }
 
-    public String getEmailFeedId() {
-        return emailFeedId;
+    public String getFeedId() {
+        return feedId;
     }
 
-    public void setEmailFeedId(String emailFeedId) {
-        this.emailFeedId = emailFeedId;
+    public void setFeedId(String feedId) {
+        this.feedId = feedId;
     }
 
-    public String getEmailFeedName() {
-        return emailFeedName;
+    public String getFeedName() {
+        return feedName;
     }
 
-    public void setEmailFeedName(String emailFeedName) {
-        this.emailFeedName = emailFeedName;
+    public void setFeedName(String feedName) {
+        this.feedName = feedName;
     }
 
-    public String getEmailFeedAddress() {
-        return emailFeedAddress;
+    public Set<String> getFeedSubscribers() {
+        return feedSubscribers;
     }
 
-    public void setEmailFeedAddress(String emailFeedAddress) {
-        this.emailFeedAddress = emailFeedAddress;
-    }
-
-    public Set<String> getEmailFeedSubscribers() {
-        return emailFeedSubscribers;
-    }
-
-    public void setEmailFeedSubscribers(Set<String> emailFeedSubscribers) {
-        this.emailFeedSubscribers = emailFeedSubscribers;
+    public void setFeedSubscribers(Set<String> feedSubscribers) {
+        this.feedSubscribers = feedSubscribers;
     }
 
     public InputSystem getInputSystem() {

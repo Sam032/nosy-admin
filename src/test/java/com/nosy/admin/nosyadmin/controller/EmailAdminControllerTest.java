@@ -1,12 +1,12 @@
 package com.nosy.admin.nosyadmin.controller;
 
-import com.nosy.admin.nosyadmin.dto.EmailFeedDto;
+import com.nosy.admin.nosyadmin.dto.FeedDto;
 import com.nosy.admin.nosyadmin.dto.EmailTemplateDto;
 import com.nosy.admin.nosyadmin.dto.InputSystemDto;
 import com.nosy.admin.nosyadmin.model.EmailProviderProperties;
 import com.nosy.admin.nosyadmin.model.EmailTemplate;
 import com.nosy.admin.nosyadmin.model.ReadyEmail;
-import com.nosy.admin.nosyadmin.service.EmailFeedService;
+import com.nosy.admin.nosyadmin.service.FeedService;
 import com.nosy.admin.nosyadmin.service.EmailTemplateService;
 import com.nosy.admin.nosyadmin.service.InputSystemService;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class EmailAdminControllerTest {
     InputSystemService inputSystemService;
 
     @Mock
-    EmailFeedService emailFeedService;
+    FeedService feedService;
 
     @Test
     public void emailTemplatePost() {
@@ -133,72 +133,72 @@ public class EmailAdminControllerTest {
     }
 
     @Test
-    public void newEmailFeed() {
-        EmailFeedDto emailFeedDto = new EmailFeedDto();
-        emailFeedDto.setId("emailFeedId");
-        emailFeedDto.setName("emailFeedName");
+    public void newFeed() {
+        FeedDto feedDto = new FeedDto();
+        feedDto.setId("feedId");
+        feedDto.setName("feedName");
         Principal principal = mock(Principal.class);
 
         assertEquals(HttpStatus.CREATED, emailAdminController.
-                newEmailFeed("inputSystemId", emailFeedDto, principal).getStatusCode());
+                newFeed("inputSystemId", feedDto, principal).getStatusCode());
     }
 
     @Test
-    public void updateEmailFeedTest() {
-        EmailFeedDto emailFeedDto = new EmailFeedDto();
+    public void updateFeedTest() {
+        FeedDto feedDto = new FeedDto();
         Principal principal = mock(Principal.class);
 
         assertEquals(HttpStatus.OK, emailAdminController
-                .updateEmailFeed("inputSystemId", "emailFeedId", emailFeedDto, principal).getStatusCode());
+                .updateFeed("inputSystemId", "feedId", feedDto, principal).getStatusCode());
     }
 
     @Test
-    public void deleteEmailFeed() {
+    public void deleteFeed() {
         Principal principal = mock(Principal.class);
         assertEquals(HttpStatus.NO_CONTENT, emailAdminController.
-                deleteEmailFeed("inputSystemId", "emailFeedId", principal).getStatusCode());
+                deleteFeed("inputSystemId", "feedId", principal).getStatusCode());
     }
 
     @Test
-    public void subscribeToEmailFeed() {
+    public void subscribeToFeed() {
         Principal principal = mock(Principal.class);
 
         assertEquals(HttpStatus.OK, emailAdminController.
-                subscribeToEmailFeed("inputSystemId", "emailFeedId", principal).getStatusCode());
+                subscribeToFeed("inputSystemId", "feedId", principal).getStatusCode());
     }
 
     @Test
-    public void unsubscribeToEmailFeed() {
+    public void unsubscribeToFeed() {
         Principal principal = mock(Principal.class);
         assertEquals(HttpStatus.NO_CONTENT, emailAdminController.
-                unsubscribeToEmailFeed("inputSystemId", "emailFeedId", principal).getStatusCode());
+                unsubscribeToFeed("inputSystemId", "feedId", principal).getStatusCode());
     }
 
     @Test
-    public void addEmailFeedToEmailTemplate() {
+    public void addFeedToEmailTemplate() {
         Principal principal = mock(Principal.class);
         assertEquals(HttpStatus.OK, emailAdminController.
-                addEmailFeedToEmailTemplate("inputSystemId", "emailTemplateId", "emailFeedId", principal).getStatusCode());
+                addFeedToEmailTemplate("inputSystemId", "emailTemplateId", "feedId", principal).getStatusCode());
     }
 
     @Test
-    public void getEmailFeeds() {
+    public void getFeeds() {
         Principal principal = mock(Principal.class);
         assertEquals(HttpStatus.OK, emailAdminController.
-                getEmailFeeds("inputSystemId", principal).getStatusCode());
+                getFeeds("inputSystemId", principal).getStatusCode());
     }
 
     @Test
-    public void getEmailFeedByInputSystemIdAndEmailFeedId() {
+    public void getFeedByInputSystemIdAndFeedId() {
         assertEquals(HttpStatus.OK, emailAdminController.
-                getEmailFeedByInputSystemIdAndEmailFeedId("inputSystemId", "emailFeedId").getStatusCode());
+                getFeedByInputSystemIdAndFeedId("inputSystemId", "feedId").getStatusCode());
     }
 
     @Test
-    public void postEmailFeed() {
+    public void postFeed() {
         Principal principal = mock(Principal.class);
         assertEquals(HttpStatus.OK, emailAdminController.
-                postEmailFeed("inputSystemId", "emailFeedId", new EmailProviderProperties(), principal).getStatusCode());
+                postFeed("inputSystemId", "feedId", new EmailProviderProperties(), principal).getStatusCode());
     }
 
 }

@@ -61,7 +61,7 @@ public class EmailTemplate {
   @NotNull private String emailTemplateSubject;
 
   @OneToMany(mappedBy = "emailTemplate")
-  private Set<EmailFeed> emailFeeds;
+  private Set<Feed> feeds;
 
   @PrePersist
   protected void onCreate() {
@@ -167,12 +167,12 @@ public class EmailTemplate {
     this.emailTemplateSubject = emailTemplateSubject;
   }
 
-  public Set<EmailFeed> getEmailFeeds() {
-    return emailFeeds;
+  public Set<Feed> getFeeds() {
+    return feeds;
   }
 
-  public void setEmailFeeds(Set<EmailFeed> emailFeeds) {
-    this.emailFeeds = emailFeeds;
+  public void setFeeds(Set<Feed> feeds) {
+    this.feeds = feeds;
   }
 
   @Override

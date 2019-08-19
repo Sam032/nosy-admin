@@ -1,11 +1,9 @@
 package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
-import com.nosy.admin.nosyadmin.integrations.ArtemisProducer;
-import com.nosy.admin.nosyadmin.integrations.KafkaProducer;
 import com.nosy.admin.nosyadmin.model.*;
-import com.nosy.admin.nosyadmin.repository.EmailFeedRepository;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
+import com.nosy.admin.nosyadmin.repository.FeedRepository;
 import com.nosy.admin.nosyadmin.repository.InputSystemRepository;
 import com.nosy.admin.nosyadmin.repository.UserRepository;
 import org.junit.Before;
@@ -14,9 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -35,7 +30,7 @@ public class EmailTemplateServiceTest {
     @Mock
     private InputSystemRepository inputSystemRepository;
     @Mock
-    private EmailFeedRepository emailFeedRepository;
+    private FeedRepository feedRepository;
     @Mock
     private SenderService senderService;
     @Mock
@@ -47,12 +42,12 @@ public class EmailTemplateServiceTest {
     private EmailTemplate emailTemplate;
     private User user;
     private InputSystem inputSystem;
-    private EmailFeed emailFeed;
+    private Feed feed;
 
     private void setVariables(){
         emailTemplateId="emailTemplateId";
 
-        inputSystemId="inputSystemId" ;
+        inputSystemId="inputSystemId";
         email="test@nosy.tech";
         emailTemplate=new EmailTemplate();
         emailTemplate.setEmailTemplateFromProvider(EmailFromProvider.DEFAULT);
@@ -70,13 +65,12 @@ public class EmailTemplateServiceTest {
         emailTemplate.setEmailTemplatePriority(1);
         emailTemplate.setEmailTemplateFromAddress("testFromAddress@nosy.tech");
 
-        emailFeed = new EmailFeed();
-        emailFeed.setEmailFeedId("emailFeedId");
-        emailFeed.setEmailFeedName("emailFeedName");
-        emailFeed.setEmailFeedAddress("emailFeedAddress");
-        emailFeed.setEmailTemplate(emailTemplate);
-        emailFeed.setInputSystem(inputSystem);
-        emailFeed.setEmailFeedSubscribers(Collections.singleton("emailFeedSubscriber"));
+        feed = new Feed();
+        feed.setFeedId("feedId");
+        feed.setFeedName("feedName");
+        feed.setEmailTemplate(emailTemplate);
+        feed.setInputSystem(inputSystem);
+        feed.setFeedSubscribers(Collections.singleton("feedSubscriber"));
 
         inputSystem=new InputSystem();
         user=new User();
@@ -88,7 +82,7 @@ public class EmailTemplateServiceTest {
         inputSystem.setInputSystemId(inputSystemId);
         inputSystem.setUser(user);
         emailTemplate.setInputSystem(inputSystem);
-        emailTemplate.setEmailFeeds(Collections.emptySet());
+        emailTemplate.setFeeds(Collections.emptySet());
 
         readyEmail=new ReadyEmail();
         readyEmail.setEmailTemplate(emailTemplate);
@@ -615,32 +609,32 @@ public class EmailTemplateServiceTest {
     }
 
     @Test
-    public void addEmailFeedToEmailTemplate() {
+    public void addFeedToEmailTemplate() {
         when(userRepository.findById(email)).thenReturn(Optional.of(user));
         doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
         doReturn(emailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId(anyString(), anyString());
-        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
-        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addEmailFeedToEmailTemplate(inputSystemId, emailTemplateId, "emailFeedId", email).getEmailTemplateId());
+        doReturn(feed).when(feedRepository).findFeedByIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addFeedToEmailTemplate(inputSystemId, emailTemplateId, "feedId", email).getEmailTemplateId());
     }
 
-    @Test(expected = EmailFeedNotFoundException.class)
-    public void addEmailFeedToEmailTemplateEmailFeedNotFound() {
+    @Test(expected = FeedNotFoundException.class)
+    public void addFeedToEmailTemplateFeedNotFound() {
         when(userRepository.findById(email)).thenReturn(Optional.of(user));
         doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
         doReturn(emailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId(anyString(), anyString());
-        doReturn(null).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
-        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addEmailFeedToEmailTemplate(inputSystemId, emailTemplateId, "emailFeedId", email).getEmailTemplateId());
+        doReturn(null).when(feedRepository).findFeedByIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addFeedToEmailTemplate(inputSystemId, emailTemplateId, "feedId", email).getEmailTemplateId());
     }
 
-    @Test(expected = EmailFeedExistException.class)
-    public void AddEmailFeedToEmailTemplateEmailFeedExsists() {
-        emailTemplate.setEmailFeeds(Collections.singleton(emailFeed));
+    @Test(expected = FeedExistException.class)
+    public void AddFeedToEmailTemplateFeedExsists() {
+        emailTemplate.setFeeds(Collections.singleton(feed));
 
         when(userRepository.findById(email)).thenReturn(Optional.of(user));
         doReturn(inputSystem).when(inputSystemRepository).findByIdAndEmail(anyString(), anyString());
         doReturn(emailTemplate).when(emailTemplateRepositoryMock).findEmailTemplatesByInputSystemIdAndEmailTemplateId(anyString(), anyString());
-        doReturn(emailFeed).when(emailFeedRepository).findEmailFeedByEmailFeedIdAndInputSystemId(anyString(), anyString());
-        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addEmailFeedToEmailTemplate(inputSystemId, emailTemplateId, emailFeed.getEmailFeedId(), email).getEmailTemplateId());
+        doReturn(feed).when(feedRepository).findFeedByIdAndInputSystemId(anyString(), anyString());
+        assertEquals(emailTemplate.getEmailTemplateId(), emailTemplateServiceMock.addFeedToEmailTemplate(inputSystemId, emailTemplateId, feed.getFeedId(), email).getEmailTemplateId());
     }
 
 }

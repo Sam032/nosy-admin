@@ -92,24 +92,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
   }
 
-  @ExceptionHandler(value = EmailFeedExistException.class)
-  public ResponseEntity<MessageError> emailFeedExistException() {
-    return new ResponseEntity<>(MessageError.EMAIL_FEED_EXIST, HttpStatus.CONFLICT);
+  @ExceptionHandler(value = FeedExistException.class)
+  public ResponseEntity<MessageError> feedExistException() {
+    return new ResponseEntity<>(MessageError.FEED_EXIST, HttpStatus.CONFLICT);
   }
 
-  @ExceptionHandler(value = EmailFeedNotFoundException.class)
-  public ResponseEntity<MessageError> emailFeedNotFound() {
-    return new ResponseEntity<>(MessageError.NO_EMAIL_FEED_FOUND, HttpStatus.NOT_FOUND);
+  @ExceptionHandler(value = FeedNotFoundException.class)
+  public ResponseEntity<MessageError> feedNotFound() {
+    return new ResponseEntity<>(MessageError.NO_FEED_FOUND, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(value = EmailFeedAlreadySubscribedException.class)
-  public ResponseEntity<MessageError> emailFeedAlreadySubscribed() {
-    return new ResponseEntity<>(MessageError.EMAIL_FEED_ALREADY_SUBSCRIBED_TO, HttpStatus.CONFLICT);
+  @ExceptionHandler(value = FeedAlreadySubscribedException.class)
+  public ResponseEntity<MessageError> feedAlreadySubscribed() {
+    return new ResponseEntity<>(MessageError.FEED_ALREADY_SUBSCRIBED_TO, HttpStatus.CONFLICT);
   }
 
-  @ExceptionHandler(value = EmailFeedNotSubscribedException.class)
-  public ResponseEntity<MessageError> emailFeedNotSubscribed() {
-    return new ResponseEntity<>(MessageError.EMAIL_FEED_NOT_SUBSCRIBED_TO, HttpStatus.BAD_REQUEST);
+  @ExceptionHandler(value = FeedNotSubscribedException.class)
+  public ResponseEntity<MessageError> feedNotSubscribed() {
+    return new ResponseEntity<>(MessageError.FEED_NOT_SUBSCRIBED_TO, HttpStatus.BAD_REQUEST);
   }
 
 }

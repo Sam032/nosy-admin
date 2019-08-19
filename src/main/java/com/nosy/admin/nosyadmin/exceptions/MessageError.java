@@ -27,11 +27,11 @@ public enum MessageError {
   EMAIL_FIELDS_SHOULD_BE_WELL_FORMED("Email fields(Email To, Email From and Email CC) should be well-formed."),
   NOT_ALL_MANDATORY_FIELDS_SPECIFIED("Please specify all Mandatory fields."),
   FIELDS_CANNOT_BE_DETERMINED("Some fields cannot be determined. Please use appropriate format for all fields."),
-  EMAIL_FEED_EXIST("Email Feed already exists. Please try another name."),
-  NO_EMAIL_FEED_FOUND("No Feed was found with specified request. Please correct your request"),
-  EMAIL_FEED_NAME_CANNOT_BE_NULL("Email Feed Name cannot be null or empty"),
-  EMAIL_FEED_ALREADY_SUBSCRIBED_TO("Email Feed already subscribed to."),
-  EMAIL_FEED_NOT_SUBSCRIBED_TO("Email Feed does not have an active subscription with the specified email.");
+  FEED_EXIST("Email Feed already exists. Please try another name."),
+  NO_FEED_FOUND("No Feed was found with specified request. Please correct your request"),
+  FEED_NAME_CANNOT_BE_NULL("Email Feed Name cannot be null or empty"),
+  FEED_ALREADY_SUBSCRIBED_TO("Email Feed already subscribed to."),
+  FEED_NOT_SUBSCRIBED_TO("Email Feed does not have an active subscription with the specified email.");
 
 
   private String message;

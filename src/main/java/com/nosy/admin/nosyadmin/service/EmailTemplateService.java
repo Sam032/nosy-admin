@@ -2,8 +2,8 @@ package com.nosy.admin.nosyadmin.service;
 
 import com.nosy.admin.nosyadmin.exceptions.*;
 import com.nosy.admin.nosyadmin.model.*;
-import com.nosy.admin.nosyadmin.repository.EmailFeedRepository;
 import com.nosy.admin.nosyadmin.repository.EmailTemplateRepository;
+import com.nosy.admin.nosyadmin.repository.FeedRepository;
 import com.nosy.admin.nosyadmin.repository.InputSystemRepository;
 import com.nosy.admin.nosyadmin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class EmailTemplateService {
   private InputSystemRepository inputSystemRepository;
   private ReadyEmail readyEmail;
   private UserRepository userRepository;
-  private EmailFeedRepository emailFeedRepository;
+  private FeedRepository feedRepository;
   private SenderService senderService;
 
   @Value("${default.nosy.from.address}")
@@ -33,13 +33,13 @@ public class EmailTemplateService {
           InputSystemRepository inputSystemRepository,
           ReadyEmail readyEmail,
           UserRepository userRepository,
-          EmailFeedRepository emailFeedRepository,
+          FeedRepository feedRepository,
           SenderService senderService) {
     this.emailTemplateRepository = emailTemplateRepository;
     this.inputSystemRepository = inputSystemRepository;
     this.userRepository = userRepository;
     this.readyEmail = readyEmail;
-    this.emailFeedRepository = emailFeedRepository;
+    this.feedRepository = feedRepository;
     this.senderService = senderService;
   }
 
@@ -192,20 +192,20 @@ public class EmailTemplateService {
     return userRepository.findById(email).isPresent();
   }
 
-  public EmailTemplate addEmailFeedToEmailTemplate(String inputSystemId, String emailTemplateId, String emailFeedId, String email) {
+  public EmailTemplate addFeedToEmailTemplate(String inputSystemId, String emailTemplateId, String feedId, String email) {
     EmailTemplate currentEmailTemplate = getEmailTemplateById(emailTemplateId, inputSystemId, email);
 
-    EmailFeed emailFeed = emailFeedRepository.findEmailFeedByEmailFeedIdAndInputSystemId(emailFeedId, inputSystemId);
-    if (emailFeed == null) {
-      throw new EmailFeedNotFoundException();
+    Feed feed = feedRepository.findFeedByIdAndInputSystemId(feedId, inputSystemId);
+    if (feed == null) {
+      throw new FeedNotFoundException();
     }
 
-    if (currentEmailTemplate.getEmailFeeds().stream().anyMatch(ef -> ef.getEmailFeedId().equals(emailFeedId))) {
-      throw new EmailFeedExistException();
+    if (currentEmailTemplate.getFeeds().stream().anyMatch(ef -> ef.getFeedId().equals(feedId))) {
+      throw new FeedExistException();
     }
 
-    emailFeed.setEmailTemplate(currentEmailTemplate);
-    emailFeedRepository.save(emailFeed);
+    feed.setEmailTemplate(currentEmailTemplate);
+    feedRepository.save(feed);
 
     return currentEmailTemplate;
   }

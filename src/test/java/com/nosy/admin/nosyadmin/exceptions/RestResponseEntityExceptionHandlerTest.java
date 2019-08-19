@@ -136,13 +136,13 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void emailFeedExistException() {
-        assertEquals(HttpStatus.CONFLICT, restResponseEntityExceptionHandler.emailFeedExistException().getStatusCode());
+    public void feedExistException() {
+        assertEquals(HttpStatus.CONFLICT, restResponseEntityExceptionHandler.feedExistException().getStatusCode());
     }
 
     @Test
-    public void emailFeedNotFoundException() {
-        assertEquals(HttpStatus.NOT_FOUND, restResponseEntityExceptionHandler.emailFeedNotFound().getStatusCode());
+    public void feedNotFoundException() {
+        assertEquals(HttpStatus.NOT_FOUND, restResponseEntityExceptionHandler.feedNotFound().getStatusCode());
     }
 
 }

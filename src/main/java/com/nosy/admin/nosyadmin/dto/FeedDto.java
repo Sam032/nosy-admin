@@ -9,16 +9,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
-public class EmailFeedDto {
+public class FeedDto {
 
     @NotNull
     private String id;
 
     @NotNull
     private String name;
-
-    @NotNull
-    private String address;
 
     @NotNull
     private Set<@NotEmpty @Email String> subscribers;
@@ -45,14 +42,6 @@ public class EmailFeedDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public Set<String> getSubscribers() {
